@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-
 let cache = {};
 
 // Helper function to calculate points based on retailer name
@@ -60,6 +59,7 @@ function purchaseDateTimeToPoints(purchaseDate, purchaseTime) {
     return date_time_points;
 }
 
+// Helper function to calculate points based on items
 function itemsToPoints(items) { 
     let items_points = 0;
 
@@ -88,6 +88,7 @@ function itemsToPoints(items) {
     return items_points;
 }
 
+// Helper function to generate a random alphanumeric ID
 function generateRandomAlphaNumericID(length) {
     const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-----------------';
     let result = '';
@@ -138,6 +139,7 @@ router.post('/process', (req, res) => {
     });
 });
 
+// This route will be used to get the points of a receipt
 router.get('/:id/points', (req, res) => {
     const id = req.params.id;
     console.log("GET ID: ", id);

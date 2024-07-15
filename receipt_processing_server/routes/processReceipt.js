@@ -60,21 +60,26 @@ function purchaseDateTimeToPoints(purchaseDate, purchaseTime) {
 function itemsToPoints(items) { 
     let items_points = 0;
 
+    console.log(items.length/2)
+
+    let item_counts = 0;
+
     for (let i = 0; i < items.length; i++) {
+        item_counts += 1;
+
+        // 5 points for every two items on the receipt.
+        if (item_counts % 2 == 0) {
+            items_points += 5;
+        }
+
         const item = items[i];
-        const item_name = item.name;
+        const item_description = item.shortDescription.trim();
         const item_price = item.price;
 
-        if (item_name.length > 5) {
-            items_points += 5;
-        }
-
-        if (item_price % 1 == 0) {
-            items_points += 10;
-        }
-
-        if (item_price % 0.25 == 0) {
-            items_points += 5;
+        // 20% of the item price if the length of the item description is divisible by 3.
+        if(item_description.length % 3 == 0) {
+            console.log("Item description: ", item_description, Math.ceil(item_price * 0.2));
+            items_points += Math.ceil(item_price * 0.2);
         }
     }
 

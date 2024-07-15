@@ -11,11 +11,10 @@ app.use(cors({
 
 const port = 3000;
 const receiptProcessRoutes = require('./routes/processReceipt');
-// const receiptPointsRoutes = require('./routes/receiptPoints');
 const welcomeRoutes = require('./routes/welcome');
 
 app.use('/', welcomeRoutes);
-app.use('/receipts/process', receiptProcessRoutes);
+app.use('/receipts', receiptProcessRoutes);
 
 
 app.listen(port, () => {

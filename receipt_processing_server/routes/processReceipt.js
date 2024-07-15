@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
+
+let cache = {};
+
 // Helper function to calculate points based on retailer name
 function retailerNameToPoints(retailer) {
     let retailer_points = 0;
@@ -60,8 +63,6 @@ function purchaseDateTimeToPoints(purchaseDate, purchaseTime) {
 function itemsToPoints(items) { 
     let items_points = 0;
 
-    console.log(items.length/2)
-
     let item_counts = 0;
 
     for (let i = 0; i < items.length; i++) {
@@ -87,8 +88,18 @@ function itemsToPoints(items) {
     return items_points;
 }
 
+function generateRandomAlphaNumericID(length) {
+    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-----------------';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        result += charset[randomIndex];
+    }
+    return result;
+}
+
 // This route will be used to process the receipt
-router.post('/', (req, res) => {
+router.post('/process', (req, res) => {
     // Access the receipt from the request body
     const receipt = req.body;
     
@@ -113,10 +124,34 @@ router.post('/', (req, res) => {
     // Calculate points based on purchase date and time
     points += purchaseDateTimeToPoints(purchaseDate, purchaseTime);
 
+    // Generate a random id for the receipt
+    let id = generateRandomAlphaNumericID(20);
+    while(cache[id] !== undefined) {
+        id = generateRandomAlphaNumericID(20);
+    }
+
+    cache[id] = points;
+
     // Send the points as a response
     res.json({
-        points: points,
+        id: id,
     });
+});
+
+router.get('/:id/points', (req, res) => {
+    const id = req.params.id;
+    console.log("GET ID: ", id);
+    const points = cache[id];
+
+    if (points === undefined) {
+        res.status(404).json({
+            error: 'Receipt not found',
+        });
+    } else {
+        res.json({
+            points: points,
+        });
+    }
 });
 
 module.exports = router;
